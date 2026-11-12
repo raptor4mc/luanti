@@ -31,6 +31,22 @@ TEST_CASE("Ray-box collision finds each axis-aligned face", "[raycast]")
 	}
 }
 
+TEST_CASE("Raycast candidate sorting prioritizes nearer hits", "[raycast]")
+{
+	const PointedThing near_node(v3s16(1, 0, 0), v3s16(0, 0, 0), v3s16(1, 0, 0),
+		v3f(), v3f(), 0, BS * BS, PointabilityType::POINTABLE);
+	const PointedThing farther_node(v3s16(2, 0, 0), v3s16(1, 0, 0), v3s16(2, 0, 0),
+		v3f(), v3f(), 0, 3 * BS * BS, PointabilityType::POINTABLE);
+	RaycastSort sort;
+	CHECK_FALSE(sort(near_node, farther_node));
+	CHECK(sort(farther_node, near_node));
+
+	const PointedThing object(7, v3f(), v3f(), v3f(), 1.5f * BS * BS,
+		PointabilityType::POINTABLE);
+	CHECK_FALSE(sort(object, near_node));
+	CHECK(sort(near_node, object));
+}
+
 TEST_CASE("Ray-box collision handles contained, endpoint, and missed rays", "[raycast]")
 {
 	const aabb3f box(0, 0, 0, 1, 1, 1);
