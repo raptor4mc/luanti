@@ -12,6 +12,7 @@ set(test_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irr_matrix4.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irr_rotation.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_k_d_tree.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_pointabilities.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_pointedthing.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_raycast.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_nodedef.cpp
