@@ -4,7 +4,9 @@
 
 #include "test.h"
 #include "dummymap.h"
+#include "gamedef.h"
 #include "pathfinder.h"
+#include "constants.h"
 
 #include <cstdlib>
 

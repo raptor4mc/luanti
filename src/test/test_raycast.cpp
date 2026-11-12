@@ -3,6 +3,7 @@
 // Copyright (C) 2026 Luanti Authors
 
 #include "catch.h"
+#include "constants.h"
 #include "raycast.h"
 
 TEST_CASE("Ray-box collision finds each axis-aligned face", "[raycast]")
