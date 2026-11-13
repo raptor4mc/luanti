@@ -112,7 +112,7 @@ void TestNodeMetadata::testMetadataListPositions(IGameDef *gamedef)
 	std::unique_ptr<NodeMetadata> removed = absolute_copy.remove(absolute_pos);
 	UASSERT(removed);
 	UASSERTEQ(size_t, absolute_copy.size(), 0);
-	UASSERTEQ(auto, removed->getString("text"), "sign");
+	UASSERT(removed->empty());
 }
 
 void TestNodeMetadata::testEmptyMetadataPolicy(IGameDef *gamedef)
