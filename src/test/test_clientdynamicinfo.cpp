@@ -36,6 +36,12 @@ TEST_CASE("ClientDynamicInfo compares network-visible fields", "[client][protoco
 		CHECK_FALSE(base.equal(changed));
 	}
 
+	SECTION("maximum formspec size changes are significant") {
+		auto changed = base;
+		changed.max_fs_size.X += 0.002f;
+		CHECK_FALSE(base.equal(changed));
+	}
+
 	SECTION("touch-control changes are significant") {
 		auto changed = base;
 		changed.touch_controls = true;

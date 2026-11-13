@@ -21,6 +21,8 @@ public:
 		return render_target_size == other.render_target_size &&
 				std::abs(real_gui_scaling - other.real_gui_scaling) < 0.001f &&
 				std::abs(real_hud_scaling - other.real_hud_scaling) < 0.001f &&
+				std::abs(max_fs_size.X - other.max_fs_size.X) < 0.001f &&
+				std::abs(max_fs_size.Y - other.max_fs_size.Y) < 0.001f &&
 				touch_controls == other.touch_controls;
 	}
 
