@@ -33,6 +33,15 @@ TEST_CASE("NameIdMapping supports bidirectional lookup and removal", "[mapping]"
 	CHECK_FALSE(mapping.getName(300, name));
 }
 
+TEST_CASE("NameIdMapping uses a stable big-endian wire format", "[mapping][serialization]")
+{
+	NameIdMapping mapping;
+	mapping.set(0x1234, "default:stone");
+	std::ostringstream output(std::ios::binary);
+	mapping.serialize(output);
+	CHECK(output.str() == std::string("\0\0\1\x12\x34\0\15default:stone", 20));
+}
+
 TEST_CASE("NameIdMapping serialization preserves mappings and rejects unknown versions", "[mapping][serialization]")
 {
 	NameIdMapping original;
