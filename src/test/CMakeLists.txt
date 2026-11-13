@@ -14,6 +14,7 @@ set(test_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_k_d_tree.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_metadata.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_object_properties.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_player_hud.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_pointabilities.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_pointedthing.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_raycast.cpp
