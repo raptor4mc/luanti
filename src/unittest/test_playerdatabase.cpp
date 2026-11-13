@@ -4,10 +4,12 @@
 
 #include "test.h"
 #include "database/database-files.h"
+#include "exceptions.h"
 #include "gamedef.h"
 #include "remoteplayer.h"
 #include "server/player_sao.h"
 
+#include <fstream>
 #include <memory>
 #include <vector>
 
@@ -72,4 +74,14 @@ void TestPlayerDatabase::testSaveLoadRemove(IGameDef *gamedef)
 	UASSERT(database.removePlayer("database_test"));
 	UASSERT(!database.loadPlayer(&loaded, loaded_sao.get()));
 	UASSERT(!database.removePlayer("database_test"));
+
+	{
+		std::ofstream corrupt(savedir + DIR_DELIM + "broken_player", std::ios::binary);
+		corrupt << "name = broken_player\n";
+	}
+	std::unique_ptr<PlayerSAO> broken_sao;
+	RemotePlayer broken("broken_player", gamedef->getItemDefManager());
+	broken_sao = std::make_unique<PlayerSAO>(nullptr, &broken, 44, false);
+	broken.setPlayerSAO(broken_sao.get());
+	EXCEPTION_CHECK(SerializationError, database.loadPlayer(&broken, broken_sao.get()));
 }
