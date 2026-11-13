@@ -19,6 +19,7 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testItemStack(IWritableItemDefManager *widef);
+	void testStackOperations(IWritableItemDefManager *widef);
 	void testSerializeDeserialize(const IItemDefManager *idef);
 
 	static const char *serialized_inventory_in;
@@ -34,6 +35,7 @@ void TestInventory::runTests(IGameDef *gamedef)
 	sanity_check(g);
 
 	TEST(testItemStack, g->getWritableItemDefManager());
+	TEST(testStackOperations, g->getWritableItemDefManager());
 	TEST(testSerializeDeserialize, gamedef->getItemDefManager());
 }
 
@@ -98,6 +100,50 @@ void TestInventory::testItemStack(IWritableItemDefManager *widef)
 		UASSERT(stack.count == 1);
 		UASSERT(stack.wear == 2);
 	}
+}
+
+void TestInventory::testStackOperations(IWritableItemDefManager *widef)
+{
+	const IItemDefManager *idef = widef;
+	ItemDefinition stackable;
+	stackable.name = "test:stackable";
+	stackable.type = ITEM_CRAFT;
+	stackable.stack_max = 10;
+	widef->registerItem(stackable);
+
+	ItemStack current("test:stackable", 8, 0, idef);
+	ItemStack incoming("test:stackable", 5, 0, idef);
+	ItemStack leftover = current.addItem(incoming, idef);
+	UASSERTEQ(u16, current.count, 10);
+	UASSERTEQ(u16, leftover.count, 3);
+
+	ItemStack rest;
+	UASSERT(!current.itemFits(ItemStack("test:stackable", 2, 0, idef), &rest, idef));
+	UASSERTEQ(u16, rest.count, 2);
+
+	current.remove(10);
+	UASSERT(current.empty());
+	UASSERTEQ(auto, current.name, "");
+	UASSERTEQ(u16, current.wear, 0);
+
+	ItemStack empty;
+	leftover = empty.addItem(ItemStack("test:stackable", 4, 0, idef), idef);
+	UASSERTEQ(u16, empty.count, 4);
+	UASSERT(leftover.empty());
+
+	ItemDefinition tool;
+	tool.name = "test:tool";
+	tool.type = ITEM_TOOL;
+	tool.stack_max = 1;
+	widef->registerItem(tool);
+	ItemStack one_tool("test:tool", 1, 0, idef);
+	ItemStack another_tool("test:tool", 1, 0, idef);
+	leftover = one_tool.addItem(another_tool, idef);
+	UASSERTEQ(u16, one_tool.count, 1);
+	UASSERTEQ(u16, leftover.count, 1);
+
+	widef->unregisterItem(tool.name);
+	widef->unregisterItem(stackable.name);
 }
 
 void TestInventory::testSerializeDeserialize(const IItemDefManager *idef)
