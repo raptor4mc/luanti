@@ -87,6 +87,14 @@ void TestNodeMetadata::testMetadataListPositions(IGameDef *gamedef)
 	UASSERTEQ(size_t, local_copy.size(), 1);
 	UASSERTEQ(auto, local_copy.get(local_pos)->getString("name"), "chest");
 
+	std::ostringstream legacy_output(std::ios::binary);
+	local_list.serialize(legacy_output, 27, true, false);
+	std::istringstream legacy_input(legacy_output.str(), std::ios::binary);
+	NodeMetadataList legacy_copy;
+	legacy_copy.deSerialize(legacy_input, gamedef->getItemDefManager(), false);
+	UASSERTEQ(size_t, legacy_copy.size(), 1);
+	UASSERTEQ(auto, legacy_copy.get(local_pos)->getString("name"), "chest");
+
 	const v3s16 absolute_pos(-10, -11, 12);
 	NodeMetadataList absolute_list;
 	auto absolute_data = std::make_unique<NodeMetadata>(gamedef->getItemDefManager());
