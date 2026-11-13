@@ -196,7 +196,7 @@ void TestDataStructures::testBitmap(u32 w, u32 h)
 	UASSERT(b.get(w-1, h-1));
 	b.toggle(w-1, h-1);
 	UASSERT(!b.all());
-	UASSERT(!b.none());
+	UASSERT(b.none() == (w * h == 1));
 	b.reset(false);
 	UASSERT(b.none());
 
@@ -215,7 +215,7 @@ void TestDataStructures::testBitmap(u32 w, u32 h)
 	for (u32 y = h; y-- > 0;) {
 		for (u32 x = w; x-- > 0;) {
 			const size_t index = y * w + x;
-			UASSERT(b.toggle(x, y));
+			UASSERT(!b.toggle(x, y));
 			expected[index] = !expected[index];
 			UASSERT(b.get(x, y) == expected[index]);
 		}

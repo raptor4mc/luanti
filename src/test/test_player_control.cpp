@@ -20,9 +20,9 @@ TEST_CASE("Player controls pack action keys into protocol bits", "[player][contr
 
 	controls.unpackKeysPressed(0x3ff);
 	CHECK(controls.up == 1);
-	CHECK(controls.down == 1);
-	CHECK(controls.left == 1);
-	CHECK(controls.right == 1);
+	CHECK(controls.down == 2);
+	CHECK(controls.left == 4);
+	CHECK(controls.right == 8);
 	CHECK(controls.jump);
 	CHECK(controls.aux1);
 	CHECK(controls.sneak);

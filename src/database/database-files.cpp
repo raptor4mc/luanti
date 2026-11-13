@@ -141,7 +141,7 @@ void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 	std::string savedir = m_savedir + DIR_DELIM;
 	std::string path = savedir + player->getName();
 	bool path_found = false;
-	RemotePlayer testplayer("", NULL);
+	RemotePlayer testplayer("player_database_probe", NULL);
 
 	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES && !path_found; i++) {
 		if (!fs::PathExists(path)) {
@@ -185,7 +185,7 @@ bool PlayerDatabaseFiles::removePlayer(const std::string &name)
 	std::string players_path = m_savedir + DIR_DELIM;
 	std::string path = players_path + name;
 
-	RemotePlayer temp_player("", NULL);
+	RemotePlayer temp_player("player_database_probe", NULL);
 	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
 		// Open file and deserialize
 		auto is = open_ifstream(path.c_str(), false);

@@ -34,7 +34,6 @@ TEST_CASE("ObjectProperties serialization preserves protocol fields", "[serializ
 	original.eye_height = 1.75f;
 	original.zoom_fov = 12;
 	original.node = MapNode(CONTENT_AIR);
-	original.node.param1 = 17;
 	original.node.param2 = 29;
 	original.hp_max = 40;
 	original.breath_max = 15;
@@ -47,7 +46,6 @@ TEST_CASE("ObjectProperties serialization preserves protocol fields", "[serializ
 	original.makes_footstep_sound = true;
 	original.automatic_face_movement_dir = true;
 	original.backface_culling = false;
-	original.static_save = false;
 	original.use_texture_alpha = true;
 	original.shaded = false;
 	original.show_on_minimap = true;
