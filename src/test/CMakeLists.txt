@@ -10,6 +10,7 @@ set(test_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test.h
 	${CMAKE_CURRENT_SOURCE_DIR}/test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_clientdynamicinfo.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_face_position_cache.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irr_matrix4.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irr_rotation.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_k_d_tree.cpp
