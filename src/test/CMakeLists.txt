@@ -26,6 +26,7 @@ set(test_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_nodedef.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_serialization.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_serveractiveobjectmgr.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_sound_spec.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_staticobject.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_translations.cpp
 	PARENT_SCOPE)
