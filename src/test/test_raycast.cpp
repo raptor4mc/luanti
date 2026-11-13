@@ -6,6 +6,8 @@
 #include "constants.h"
 #include "raycast.h"
 
+#include <cmath>
+
 TEST_CASE("Ray-box collision finds each axis-aligned face", "[raycast]")
 {
 	const aabb3f box(0, 0, 0, 1, 1, 1);
@@ -46,6 +48,28 @@ TEST_CASE("Raycast candidate sorting prioritizes nearer hits", "[raycast]")
 		PointabilityType::POINTABLE);
 	CHECK_FALSE(sort(object, near_node));
 	CHECK(sort(near_node, object));
+}
+
+TEST_CASE("Rotated ray-box collision transforms points and normals", "[raycast]")
+{
+	const aabb3f box(0, 0, 0, 1, 1, 1);
+	core::quaternion rotation;
+	rotation.fromAngleAxis(1.57079632679f, core::vector3df(0, 0, 1));
+	const v3f local_start(-1, 0.5f, 0.5f);
+	const v3f local_direction(2, 0, 0);
+	const v3f start = rotation * local_start;
+	const v3f direction = rotation * local_direction;
+	v3f point, normal, raw_normal;
+
+	REQUIRE(boxLineCollision(box, rotation, start, direction,
+			&point, &normal, &raw_normal));
+	CHECK(std::abs(point.X + 0.5f) < 0.0001f);
+	CHECK(std::abs(point.Y) < 0.0001f);
+	CHECK(std::abs(point.Z - 0.5f) < 0.0001f);
+	CHECK(std::abs(normal.X) < 0.0001f);
+	CHECK(std::abs(normal.Y + 1.0f) < 0.0001f);
+	CHECK(std::abs(normal.Z) < 0.0001f);
+	CHECK(raw_normal == v3f(-1, 0, 0));
 }
 
 TEST_CASE("Ray-box collision handles contained, endpoint, and missed rays", "[raycast]")
