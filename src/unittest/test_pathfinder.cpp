@@ -49,8 +49,14 @@ void TestPathfinder::testFlatGroundPath(IGameDef *gamedef)
 		const std::vector<v3s16> path = get_path(&map,
 			gamedef->getNodeDefManager(), source, destination, 2, 0, 0, algorithm);
 		UASSERT(!path.empty());
+		UASSERTEQ(size_t, path.size(), 4);
 		UASSERTEQ(v3s16, path.front(), source);
 		UASSERTEQ(v3s16, path.back(), destination);
+
+		const std::vector<v3s16> trivial_path = get_path(&map,
+			gamedef->getNodeDefManager(), source, source, 2, 0, 0, algorithm);
+		UASSERTEQ(size_t, trivial_path.size(), 1);
+		UASSERT(trivial_path.front() == source);
 
 		for (size_t i = 1; i < path.size(); i++) {
 			const v3s16 delta = path[i] - path[i - 1];
