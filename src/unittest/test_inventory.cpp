@@ -142,6 +142,16 @@ void TestInventory::testStackOperations(IWritableItemDefManager *widef)
 	UASSERTEQ(u16, one_tool.count, 1);
 	UASSERTEQ(u16, leftover.count, 1);
 
+	ItemStack nearly_broken("test:tool", 1, 65500, idef);
+	UASSERT(nearly_broken.addWear(100, idef));
+	UASSERT(nearly_broken.empty());
+	ItemStack repairable("test:tool", 1, 100, idef);
+	UASSERT(repairable.addWear(-200, idef));
+	UASSERTEQ(u16, repairable.wear, 0);
+	ItemStack non_tool("test:stackable", 1, 5, idef);
+	UASSERT(!non_tool.addWear(100, idef));
+	UASSERTEQ(u16, non_tool.wear, 5);
+
 	widef->unregisterItem(tool.name);
 	widef->unregisterItem(stackable.name);
 }
