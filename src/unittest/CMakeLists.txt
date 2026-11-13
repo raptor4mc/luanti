@@ -30,6 +30,7 @@ set(unittest_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_moveaction.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_noderesolver.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_nodetimer.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_nodemetadata.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_noise.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_objdef.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_pathfinder.cpp
