@@ -62,6 +62,40 @@ TEST_CASE("Player keyboard movement maps cardinal directions", "[player][control
 	}
 }
 
+TEST_CASE("Player physics overrides compare all movement fields", "[player][physics]")
+{
+	const PlayerPhysicsOverride defaults;
+	CHECK(defaults == PlayerPhysicsOverride());
+	CHECK(defaults.speed == 1.0f);
+	CHECK(defaults.jump == 1.0f);
+	CHECK(defaults.gravity == 1.0f);
+	CHECK(defaults.sneak);
+	CHECK_FALSE(defaults.sneak_glitch);
+	CHECK(defaults.new_move);
+
+	const auto isDifferent = [&defaults](const PlayerPhysicsOverride &changed) {
+		return changed != defaults;
+	};
+	PlayerPhysicsOverride changed;
+	changed.speed = 2;
+	CHECK(isDifferent(changed));
+	changed = defaults; changed.jump = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.gravity = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.sneak = false; CHECK(isDifferent(changed));
+	changed = defaults; changed.sneak_glitch = true; CHECK(isDifferent(changed));
+	changed = defaults; changed.new_move = false; CHECK(isDifferent(changed));
+	changed = defaults; changed.speed_climb = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.speed_crouch = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.liquid_fluidity = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.liquid_fluidity_smooth = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.liquid_sink = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.acceleration_default = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.acceleration_air = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.speed_fast = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.acceleration_fast = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.speed_walk = 2; CHECK(isDifferent(changed));
+}
+
 TEST_CASE("Player diagonal movement is normalized and keyboard input preserves joystick state", "[player][controls]")
 {
 	PlayerControl controls;
