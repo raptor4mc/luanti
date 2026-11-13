@@ -17,6 +17,7 @@ public:
 	void runTests(IGameDef *gamedef);
 	void testPrivateMetadata(IGameDef *gamedef);
 	void testMetadataListPositions(IGameDef *gamedef);
+	void testEmptyMetadataPolicy(IGameDef *gamedef);
 };
 
 static TestNodeMetadata g_test_instance;
@@ -25,6 +26,7 @@ void TestNodeMetadata::runTests(IGameDef *gamedef)
 {
 	TEST(testPrivateMetadata, gamedef);
 	TEST(testMetadataListPositions, gamedef);
+	TEST(testEmptyMetadataPolicy, gamedef);
 }
 
 void TestNodeMetadata::testPrivateMetadata(IGameDef *gamedef)
@@ -44,6 +46,14 @@ void TestNodeMetadata::testPrivateMetadata(IGameDef *gamedef)
 	UASSERTEQ(auto, disk_copy.getString("public"), "visible");
 	UASSERTEQ(auto, disk_copy.getString("private"), "hidden");
 	UASSERT(disk_copy.isPrivate("private"));
+
+	std::ostringstream legacy_output(std::ios::binary);
+	original.serialize(legacy_output, 1, true);
+	std::istringstream legacy_input(legacy_output.str(), std::ios::binary);
+	NodeMetadata legacy_copy(gamedef->getItemDefManager());
+	legacy_copy.deSerialize(legacy_input, 1);
+	UASSERTEQ(auto, legacy_copy.getString("private"), "hidden");
+	UASSERT(!legacy_copy.isPrivate("private"));
 
 	std::ostringstream network_output(std::ios::binary);
 	original.serialize(network_output, 2, false);
@@ -95,4 +105,27 @@ void TestNodeMetadata::testMetadataListPositions(IGameDef *gamedef)
 	UASSERT(removed);
 	UASSERTEQ(size_t, absolute_copy.size(), 0);
 	UASSERTEQ(auto, removed->getString("text"), "sign");
+}
+
+void TestNodeMetadata::testEmptyMetadataPolicy(IGameDef *gamedef)
+{
+	NodeMetadataList list;
+	const v3s16 pos(1, 2, 3);
+	list.set(pos, new NodeMetadata(gamedef->getItemDefManager()));
+
+	std::ostringstream omitted_output(std::ios::binary);
+	list.serialize(omitted_output, 28, true, false, false);
+	UASSERTEQ(auto, omitted_output.str(), std::string("\0", 1));
+	std::istringstream omitted_input(omitted_output.str(), std::ios::binary);
+	NodeMetadataList omitted_copy;
+	omitted_copy.deSerialize(omitted_input, gamedef->getItemDefManager());
+	UASSERTEQ(size_t, omitted_copy.size(), 0);
+
+	std::ostringstream included_output(std::ios::binary);
+	list.serialize(included_output, 28, true, false, true);
+	std::istringstream included_input(included_output.str(), std::ios::binary);
+	NodeMetadataList included_copy;
+	included_copy.deSerialize(included_input, gamedef->getItemDefManager());
+	UASSERTEQ(size_t, included_copy.size(), 1);
+	UASSERT(included_copy.get(pos)->empty());
 }
