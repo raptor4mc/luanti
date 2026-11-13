@@ -16,6 +16,7 @@ set(test_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_metadata.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_nameidmapping.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_object_properties.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_particles.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_player_control.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_player_hud.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_pointabilities.cpp
