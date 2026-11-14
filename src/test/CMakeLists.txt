@@ -9,11 +9,25 @@ endif()
 set(test_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test.h
 	${CMAKE_CURRENT_SOURCE_DIR}/test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_clientdynamicinfo.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_face_position_cache.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_hud_element.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irr_matrix4.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irr_rotation.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_k_d_tree.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_metadata.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_nameidmapping.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_object_properties.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_particles.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_player_control.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_player_hud.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_pointabilities.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_pointedthing.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_raycast.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_nodedef.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_serialization.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_serveractiveobjectmgr.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_sound_spec.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_staticobject.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_translations.cpp
 	PARENT_SCOPE)

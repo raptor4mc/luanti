@@ -39,6 +39,12 @@ void TestDataStructures::runTests(IGameDef *gamedef)
 	TEST(testBitmap, 7, 1); // ^
 	TEST(testBitmap, 3, 3); // 7
 	TEST(testBitmap, 4, 4); // 0
+
+	// Exercise 100 shapes to cover all small dimensions and their padding.
+	for (u32 width = 1; width <= 10; width++) {
+		for (u32 height = 1; height <= 10; height++)
+			TEST(testBitmap, width, height);
+	}
 }
 
 namespace {
@@ -180,6 +186,8 @@ void TestDataStructures::testMap5()
 void TestDataStructures::testBitmap(u32 w, u32 h)
 {
 	Bitmap b(w, h);
+	UASSERTEQ(u32, b.width(), w);
+	UASSERTEQ(u32, b.height(), h);
 
 	UASSERT(b.none());
 	b.reset(true);
@@ -188,16 +196,40 @@ void TestDataStructures::testBitmap(u32 w, u32 h)
 	UASSERT(b.get(w-1, h-1));
 	b.toggle(w-1, h-1);
 	UASSERT(!b.all());
-	UASSERT(!b.none());
+	UASSERT(b.none() == (w * h == 1));
 	b.reset(false);
 	UASSERT(b.none());
 
-	for (u32 x = 0; x < w; x++)
-	for (u32 y = 0; y < h; y++)
-		b.set(x, y);
+	// Use a simple reference grid while exercising each coordinate in both
+	// traversal orders; this catches row-stride and bit-padding regressions.
+	std::vector<bool> expected(w * h, false);
+	for (u32 y = 0; y < h; y++) {
+		for (u32 x = 0; x < w; x++) {
+			const size_t index = y * w + x;
+			b.set(x, y);
+			expected[index] = true;
+			UASSERT(b.get(x, y) == expected[index]);
+		}
+	}
 	UASSERT(b.all());
-	for (u32 x = 0; x < w; x++)
-	for (u32 y = 0; y < h; y++)
-		b.unset(x, y);
+	for (u32 y = h; y-- > 0;) {
+		for (u32 x = w; x-- > 0;) {
+			const size_t index = y * w + x;
+			UASSERT(!b.toggle(x, y));
+			expected[index] = !expected[index];
+			UASSERT(b.get(x, y) == expected[index]);
+		}
+	}
 	UASSERT(b.none());
+
+	// Reset must affect the logical area even when the final storage byte has
+	// unused padding bits.
+	b.reset(true);
+	for (u32 y = 0; y < h; y++)
+	for (u32 x = 0; x < w; x++)
+		UASSERT(b.get(x, y));
+	b.reset(false);
+	for (u32 y = 0; y < h; y++)
+	for (u32 x = 0; x < w; x++)
+		UASSERT(!b.get(x, y));
 }

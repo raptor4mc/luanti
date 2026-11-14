@@ -1,0 +1,117 @@
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2026 Luanti Authors
+
+#include "catch.h"
+#include "player.h"
+
+#include <cmath>
+
+TEST_CASE("Player controls pack action keys into protocol bits", "[player][controls]")
+{
+	PlayerControl controls;
+	controls.jump = true;
+	controls.aux1 = true;
+	controls.sneak = true;
+	controls.dig = true;
+	controls.place = true;
+	controls.zoom = true;
+	CHECK(controls.getKeysPressed() == 0x3f0);
+
+	controls.unpackKeysPressed(0x3ff);
+	CHECK(controls.up == 1);
+	CHECK(controls.down == 2);
+	CHECK(controls.left == 4);
+	CHECK(controls.right == 8);
+	CHECK(controls.jump);
+	CHECK(controls.aux1);
+	CHECK(controls.sneak);
+	CHECK(controls.dig);
+	CHECK(controls.place);
+	CHECK(controls.zoom);
+}
+
+TEST_CASE("Player keyboard movement maps cardinal directions", "[player][controls]")
+{
+	struct DirectionCase {
+		float up;
+		float down;
+		float left;
+		float right;
+		u32 expected_bit;
+		v2f expected_movement;
+	};
+	const DirectionCase cases[] = {
+		{1, 0, 0, 0, 1u << 0, v2f(0, 1)},
+		{0, 1, 0, 0, 1u << 1, v2f(0, -1)},
+		{0, 0, 1, 0, 1u << 2, v2f(-1, 0)},
+		{0, 0, 0, 1, 1u << 3, v2f(1, 0)},
+	};
+
+	for (const DirectionCase &test : cases) {
+		PlayerControl controls;
+		controls.up = test.up;
+		controls.down = test.down;
+		controls.left = test.left;
+		controls.right = test.right;
+		controls.setMovementFromKeys();
+		CHECK((controls.getKeysPressed() & 0xf) == test.expected_bit);
+		const v2f movement = controls.getMovement();
+		CHECK(std::abs(movement.X - test.expected_movement.X) < 0.0001f);
+		CHECK(std::abs(movement.Y - test.expected_movement.Y) < 0.0001f);
+	}
+}
+
+TEST_CASE("Player physics overrides compare all movement fields", "[player][physics]")
+{
+	const PlayerPhysicsOverride defaults;
+	CHECK(defaults == PlayerPhysicsOverride());
+	CHECK(defaults.speed == 1.0f);
+	CHECK(defaults.jump == 1.0f);
+	CHECK(defaults.gravity == 1.0f);
+	CHECK(defaults.sneak);
+	CHECK_FALSE(defaults.sneak_glitch);
+	CHECK(defaults.new_move);
+
+	const auto isDifferent = [&defaults](const PlayerPhysicsOverride &changed) {
+		return changed != defaults;
+	};
+	PlayerPhysicsOverride changed;
+	changed.speed = 2;
+	CHECK(isDifferent(changed));
+	changed = defaults; changed.jump = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.gravity = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.sneak = false; CHECK(isDifferent(changed));
+	changed = defaults; changed.sneak_glitch = true; CHECK(isDifferent(changed));
+	changed = defaults; changed.new_move = false; CHECK(isDifferent(changed));
+	changed = defaults; changed.speed_climb = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.speed_crouch = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.liquid_fluidity = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.liquid_fluidity_smooth = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.liquid_sink = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.acceleration_default = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.acceleration_air = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.speed_fast = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.acceleration_fast = 2; CHECK(isDifferent(changed));
+	changed = defaults; changed.speed_walk = 2; CHECK(isDifferent(changed));
+}
+
+TEST_CASE("Player diagonal movement is normalized and keyboard input preserves joystick state", "[player][controls]")
+{
+	PlayerControl controls;
+	controls.up = 1;
+	controls.right = 1;
+	controls.setMovementFromKeys();
+	const v2f diagonal = controls.getMovement();
+	CHECK(std::abs(diagonal.X - 0.7071067f) < 0.0001f);
+	CHECK(std::abs(diagonal.Y - 0.7071067f) < 0.0001f);
+	CHECK((controls.getKeysPressed() & 0xf) == ((1u << 0) | (1u << 3)));
+
+	controls.movement_speed = 0.25f;
+	controls.movement_direction = 1.0f;
+	controls.up = 0;
+	controls.right = 0;
+	controls.setMovementFromKeys();
+	CHECK(controls.movement_speed == 0.25f);
+	CHECK(controls.movement_direction == 1.0f);
+}

@@ -17,6 +17,7 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testAxisAlignedCollision();
+	void testAllAxisDirections();
 	void testCollisionMoveSimple(IGameDef *gamedef);
 };
 
@@ -25,6 +26,7 @@ static TestCollision g_test_instance;
 void TestCollision::runTests(IGameDef *gamedef)
 {
 	TEST(testAxisAlignedCollision);
+	TEST(testAllAxisDirections);
 	TEST(testCollisionMoveSimple, gamedef);
 }
 
@@ -148,8 +150,6 @@ void TestCollision::testAxisAlignedCollision()
 			UASSERT(fabs(dtime - 2.000) < 0.001);
 		}
 
-		// TODO: Y-, Y+, Z-, Z+
-
 		// misc
 		{
 			aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
@@ -199,6 +199,27 @@ void TestCollision::testAxisAlignedCollision()
 			UASSERT(axisAlignedCollision(s, m, v, &dtime) == 2);
 			UASSERT(fabs(dtime - 16.1) < 0.001);
 		}
+	}
+}
+
+void TestCollision::testAllAxisDirections()
+{
+	for (s16 bx = -3; bx <= 3; bx++)
+	for (s16 by = -3; by <= 3; by++)
+	for (s16 bz = -3; bz <= 3; bz++) {
+		const aabb3f stationary(bx, by, bz, bx + 1, by + 1, bz + 1);
+		const auto check = [&](const aabb3f &moving, const v3f &speed, int axis) {
+			f32 dtime = 1.0f;
+			UASSERTEQ(int, axisAlignedCollision(stationary, moving, speed, &dtime), axis);
+			UASSERT(fabs(dtime - 1.0f) < 0.001f);
+		};
+
+		check(aabb3f(bx - 2, by, bz, bx - 1, by + 1, bz + 1), v3f(1, 0, 0), 0);
+		check(aabb3f(bx + 2, by, bz, bx + 3, by + 1, bz + 1), v3f(-1, 0, 0), 0);
+		check(aabb3f(bx, by - 2, bz, bx + 1, by - 1, bz + 1), v3f(0, 1, 0), 1);
+		check(aabb3f(bx, by + 2, bz, bx + 1, by + 3, bz + 1), v3f(0, -1, 0), 1);
+		check(aabb3f(bx, by, bz - 2, bx + 1, by + 1, bz - 1), v3f(0, 0, 1), 2);
+		check(aabb3f(bx, by, bz + 2, bx + 1, by + 1, bz + 3), v3f(0, 0, -1), 2);
 	}
 }
 

@@ -108,6 +108,7 @@ RemotePlayerChatResult RemotePlayer::canSendChatMessage()
 void RemotePlayer::onSuccessfulSave()
 {
 	setModified(false);
+	inventory.setModified(false);
 	if (m_sao)
 		m_sao->getMeta().setModified(false);
 }

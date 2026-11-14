@@ -29,8 +29,12 @@ set(unittest_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_modstoragedatabase.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_moveaction.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_noderesolver.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_nodetimer.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_nodemetadata.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_noise.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_objdef.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_pathfinder.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_playerdatabase.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_profiler.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_random.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_sao.cpp
@@ -40,6 +44,7 @@ set(unittest_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_settings.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_socket.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_servermodmanager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_texture_override.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_threading.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_utilities.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_voxelarea.cpp
