@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <set>
+#include <thread>
 #include <tuple>
 
 using Position = std::tuple<s16, s16, s16>;
@@ -41,12 +42,34 @@ TEST_CASE("Face position cache returns the center and the six-neighbor shell", "
 
 TEST_CASE("Face position cache returns only the outer cube shell", "[face-position-cache]")
 {
-	const auto &positions = FacePositionCache::getFacePositions(2);
-	REQUIRE(positions.size() == 98);
-	std::set<Position> unique_positions;
-	for (const v3s16 &pos : positions) {
-		CHECK(std::max({std::abs(pos.X), std::abs(pos.Y), std::abs(pos.Z)}) == 2);
-		unique_positions.insert(toPosition(pos));
+	for (s16 radius = 1; radius <= 5; radius++) {
+		const auto &positions = FacePositionCache::getFacePositions(radius);
+		CHECK(positions.size() == static_cast<size_t>(24 * radius * radius + 2));
+		std::set<Position> unique_positions;
+		for (const v3s16 &pos : positions) {
+			CHECK(std::max({std::abs(pos.X), std::abs(pos.Y), std::abs(pos.Z)}) == radius);
+			unique_positions.insert(toPosition(pos));
+		}
+		CHECK(unique_positions.size() == positions.size());
 	}
-	CHECK(unique_positions.size() == positions.size());
+}
+
+TEST_CASE("Face position cache serializes concurrent first access", "[face-position-cache][threading]")
+{
+	constexpr size_t thread_count = 8;
+	std::vector<const std::vector<v3s16> *> results(thread_count);
+	std::vector<std::thread> threads;
+	threads.reserve(thread_count);
+	for (size_t i = 0; i < thread_count; i++) {
+		threads.emplace_back([&, i] {
+			results[i] = &FacePositionCache::getFacePositions(6);
+		});
+	}
+	for (std::thread &thread : threads)
+		thread.join();
+
+	REQUIRE(results[0] != nullptr);
+	for (const auto *result : results)
+		CHECK(result == results[0]);
+	CHECK(results[0]->size() == 24 * 6 * 6 + 2);
 }

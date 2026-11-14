@@ -16,6 +16,7 @@ public:
 	void runTests(IGameDef *gamedef);
 	void testTargetParsing();
 	void testWorldAlignmentParsing();
+	void testTargetAliasesAndCombinations();
 };
 
 static TestTextureOverride g_test_instance;
@@ -24,6 +25,7 @@ void TestTextureOverride::runTests(IGameDef *gamedef)
 {
 	TEST(testTargetParsing);
 	TEST(testWorldAlignmentParsing);
+	TEST(testTargetAliasesAndCombinations);
 }
 
 void TestTextureOverride::testTargetParsing()
@@ -78,4 +80,34 @@ void TestTextureOverride::testWorldAlignmentParsing()
 	UASSERTEQ(auto, overrides[0].id, "test:small");
 	UASSERTEQ(u8, overrides[0].world_scale, 17);
 	UASSERTEQ(u8, overrides[1].world_scale, U8_MAX);
+}
+
+void TestTextureOverride::testTargetAliasesAndCombinations()
+{
+	const std::string filepath = getTestTempFile();
+	{
+		std::ofstream file(filepath);
+		file << "test:sides sides sides.png\n"
+				"test:star * star.png\n"
+				"test:overlay overlay_sides overlay.png\n"
+				"test:all_overlay overlay_* all_overlay.png\n"
+				"test:special special6 special.png\n"
+				"test:mixed top,unknown mixed.png\n";
+	}
+
+	TextureOverrideSource source(filepath);
+	const auto nodes = source.getNodeTileOverrides();
+	UASSERTEQ(size_t, nodes.size(), 6);
+	UASSERT(nodes[0].hasTarget(OverrideTarget::LEFT));
+	UASSERT(nodes[0].hasTarget(OverrideTarget::RIGHT));
+	UASSERT(nodes[0].hasTarget(OverrideTarget::FRONT));
+	UASSERT(nodes[0].hasTarget(OverrideTarget::BACK));
+	UASSERT(!nodes[0].hasTarget(OverrideTarget::TOP));
+
+	UASSERT(nodes[1].hasTarget(OverrideTarget::ALL_FACES));
+	UASSERT(!nodes[1].hasTarget(OverrideTarget::INVENTORY));
+	UASSERT(nodes[2].hasTarget(OverrideTarget::OVERLAY_SIDES));
+	UASSERT(nodes[3].hasTarget(OverrideTarget::OVERLAY_ALL));
+	UASSERT(nodes[4].hasTarget(OverrideTarget::SPECIAL_6));
+	UASSERT(nodes[5].hasTarget(OverrideTarget::TOP));
 }
